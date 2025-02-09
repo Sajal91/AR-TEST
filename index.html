@@ -10,13 +10,37 @@
     <a-scene embedded arjs>
         <!-- Marker -->
         <a-marker preset="hiro">
-            <a-entity gltf-model="./kawashaki_ninja_h2.glb" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
+            <a-entity gltf-model="./kawashaki_ninja_h2.glb" rotation="0 180 0" position="0 0 0" scale="0.5 0.5 0.5"
+                gesture-handler></a-entity>
             <a-video src="todoApp.mp4" width="2" height="1" position="0 0 0" autoplay loop rotation="-90 0 0">
             </a-video>
         </a-marker>
 
         <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+        AFRAME.registerComponent('gesture-handler', {
+            init: function () {
+                let el = this.el;
+                let scaleFactor = 1;
+                let lastX = 0, lastY = 0;
+
+                this.el.sceneEl.addEventListener('onefingermove', function (event) {
+                    let dX = event.detail.positionChange.x;
+                    let dY = event.detail.positionChange.y;
+                    el.object3D.position.x += dX * 0.1;
+                    el.object3D.position.y -= dY * 0.1;
+                });
+
+                this.el.sceneEl.addEventListener('twofingermove', function (event) {
+                    scaleFactor *= 1 + event.detail.spreadChange / 200;
+                    scaleFactor = Math.max(0.3, Math.min(2, scaleFactor)); // Limit scale
+                    el.object3D.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
